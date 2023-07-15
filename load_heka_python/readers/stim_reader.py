@@ -7,6 +7,10 @@ warnings.simplefilter('always', UserWarning)
 # Generate Stimulus
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
+def printDict(d):
+    for k,v in d.items():
+        print(f'  === {k}: {v}')
+
 def get_stimulus_for_series(pul, pgf, group_idx, series_idx):
     """
     Reconstruct the stimulus from the stimulis protocol stored in StimTree.
@@ -16,7 +20,50 @@ def get_stimulus_for_series(pul, pgf, group_idx, series_idx):
     """
     stim_sweep, pul_sweep, num_sweeps_in_recorded_data = get_sweep_info(pul, pgf, group_idx, series_idx)
 
+    #print('=== abb in stim_reader.py get_stimulus_for_series()')
+    # print('stim_sweep hd:', stim_sweep.keys())
+    # printDict(stim_sweep['hd'])
+    if 0:
+        print('stim_sweep ch:')
+        for _idx, _ch in enumerate(stim_sweep['ch']):
+            print('xxx _idx', _idx)
+            printDict(_ch['hd'])
+            
+            print('aaa _ch["ch"] has num in list', len(_ch['ch']))
+            for _idx2, _ch2 in enumerate(_ch['ch']):
+                print('yyy idx2:', _idx2)
+                printDict(_ch2['hd'])
+                #printDict(_ch2['ch'])
+    
+    # print('pul_sweep hd:')
+    # printDict(pul_sweep['hd'])
+    
+    if 0:
+        print('pul_sweep ch:')
+        # print(pul_sweep['ch'])
+        for _idx, _ch in enumerate(pul_sweep['ch']):
+            print('jjj _idx', _idx)
+            printDict(_ch['hd'])
+            # for _idx2, _ch2 in enumerate(_ch['ch']):
+            #     print('kkk _idx2:', _idx2)
+            #     printDict(_ch2['hd'])
+            #     #printDict(_ch2['ch'])
+
+    # print('num_sweeps_in_recorded_data:')
+    # print(num_sweeps_in_recorded_data)
+    
     dac, info = get_dac_and_important_params(stim_sweep)
+
+    if 0:
+        print('=== abb')
+        print('dac:')
+        # printDict(dac)
+        for _idx, _ch in enumerate(dac['ch']):
+            print('qqq _idx', _idx)
+            printDict(_ch['hd'])
+
+        print('info:')
+        printDict(info)
 
     if not check_header(dac):
         return False
@@ -26,6 +73,9 @@ def get_stimulus_for_series(pul, pgf, group_idx, series_idx):
     data = create_stimulus_waveform_from_segments(segments, info, num_sweeps_in_recorded_data)
 
     check_data(data, pul_sweep, num_sweeps_in_recorded_data)
+
+    #print('abb in stim_reader.py get_stimulus_for_series() adding stim_sweep to dict')
+    info['abb_stim_sweep'] = stim_sweep
 
     info["data"] = data
     return info
